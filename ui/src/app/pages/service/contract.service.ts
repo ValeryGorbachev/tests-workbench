@@ -40,8 +40,9 @@ export class ContractService extends AbstractCrudService<Contract> {
         return this.http.get<PageModel<Contract>>(this._subUrl, { params });
     }
 
-    public findSimple(query = ''): Observable<SelectListItemDto[]> {
+    public findSimple(contractorId: number, query = ''): Observable<SelectListItemDto[]> {
         let params = new HttpParams();
+        params = params.set('contractorId', contractorId);
         if (query) {
             params = params.set('query', query);
         }

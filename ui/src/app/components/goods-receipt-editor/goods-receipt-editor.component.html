@@ -1,0 +1,117 @@
+<form [formGroup]="form" class="p-fluid">
+    <div class="grid grid-cols-2 gap-4">
+
+        <div style="width: 80%">
+            <label for="docNumber" class="block mb-1">Номер</label>
+            <input id="docNumber" pInputText formControlName="documentNumber" class="w-full" placeholder="№ документа"/>
+        </div>
+
+
+        <div style="width: 80%">
+            <label for="docDate" class="block mb-1">Дата</label>
+            <p-datePicker [style]="{width:'100%'}" [inputStyle]="{width:'100%'}" id="docDate"
+                          formControlName="documentDate"
+                          dateFormat="dd.mm.yy" [showIcon]="true" [readonlyInput]="true" [autofocus]="false"
+                          placeholder="Выберите дату">
+            </p-datePicker>
+        </div>
+
+
+        <div style="width: 80%">
+            <label for="contractor" class="block mb-1">Контрагент</label>
+            <p-autoComplete [style]="{width:'100%'}" [inputStyle]="{width:'100%'}" [forceSelection]="true"
+                            formControlName="contractor"
+                            [suggestions]="contractors" (completeMethod)="completeContractors($event)"
+                            optionLabel="title"
+                            showClear="true" placeholder="Выберите контрагента">
+                <ng-template let-item>{{ item.title }}</ng-template>
+            </p-autoComplete>
+        </div>
+
+
+        <div style="width: 80%">
+            <label for="contract" class="block mb-1">Договор</label>
+            <p-autoComplete [style]="{width:'100%'}" [inputStyle]="{width:'100%'}" id="contract"
+                            formControlName="contract"
+                            [suggestions]="contracts" (completeMethod)="completeContracts($event)" optionLabel="title"
+                            placeholder="Выберите договор">
+                <ng-template let-item>{{ item.title }}</ng-template>
+            </p-autoComplete>
+        </div>
+
+
+        <div style="width: 80%">
+            <label for="warehouse" class="block mb-1">Склад</label>
+            <p-autoComplete [style]="{width:'100%'}" [inputStyle]="{width:'100%'}" id="warehouse"
+                            formControlName="warehouse"
+                            [suggestions]="warehouses" (completeMethod)="completeWarehouses($event)" optionLabel="title"
+                            placeholder="Выберите склад">
+                <ng-template let-item>{{ item.title }}</ng-template>
+            </p-autoComplete>
+        </div>
+    </div>
+
+
+    <div class="card mt-3">
+        <span class="flex gap-2">
+        <p-button pButton label="Добавить строку" (click)="addRow()"></p-button>
+        <p-button icon="pi pi-upload" (onClick)="uploadCsv()" label="Загрузить CSV"></p-button>
+        </span>
+
+
+        <table *ngIf="items.controls.length > 0"
+               class="p-datatable p-component custom-table"
+               [formArrayName]="'items'">
+            <thead>
+            <tr>
+                <th>Номенклатура</th>
+                <th>Кол-во</th>
+                <th>Цена</th>
+                <th>Сумма</th>
+                <th></th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr *ngFor="let row of items.controls; let i = index" [formGroupName]="i">
+                <td>
+                    <p-autoComplete formControlName="itemType"
+                                    [suggestions]="itemTypes"
+                                    (completeMethod)="completeItemTypes($event)"
+                                    optionLabel="title"></p-autoComplete>
+                </td>
+                <td>
+                    <input type="number"
+                           formControlName="quantity"
+                           pInputText
+                           step="1"
+                           min="0"
+                           (input)="recalcRow(i)"/>
+                </td>
+                <td>
+                    <input type="number"
+                           formControlName="price"
+                           pInputText
+                           step="0.01"
+                           min="0"
+                           (input)="recalcRow(i)"/>
+                </td>
+                <td>
+                    <input type="number"
+                           formControlName="totalSum"
+                           pInputText
+                           step="0.01"
+                           [readonly]="true"/>
+                </td>
+                <td>
+                    <p-button icon="pi pi-trash" (click)="removeRow(i)"></p-button>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <div class="p-dialog-footer">
+        <p-button label="Сохранить" type="button" (click)="save()" severity="success"></p-button>
+        <p-button label="Отмена" type="button" (click)="cancel()" severity="danger"></p-button>
+    </div>
+</form>
